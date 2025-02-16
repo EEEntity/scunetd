@@ -1,0 +1,11 @@
+[Unit]
+Description=Login scunet
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=scunetd.sh
+User=
+
+[Install]
+WantedBy=multi-user.target
