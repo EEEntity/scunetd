@@ -11,12 +11,7 @@ function show_help() {
 }
 
 fetch_params() {
-    local fetch_url="http://""$1"
-    test_online=$(curl -XGET -sL -o /dev/null -w '%{url_effective}' $fetch_url)
-    if [[ $test_online == *"success.jsp"* ]]; then
-        echo "rdy"
-    fi
-    string=$(curl -XGET -sL $fetch_url | cut -d"'" -f2)
+    string=$(curl -XGET -sL $1 | cut -d"'" -f2)
     echo ${string#*\?}
 }
 
@@ -41,11 +36,13 @@ EOF
 login() {
     local userid="$1"
     local passwd="$2"
-    local login_url="http://"$3"/eportal/InterFace.do?method=login"
-    query=$(fetch_params $ip)
-    if [[ $query == "rdy" ]]; then
+    local fetch_url="http://""$3"
+    local login_url="$fetch_url""/eportal/InterFace.do?method=login"
+    test_online=$(curl -XGET -sL -o /dev/null -w '%{url_effective}' $fetch_url)
+    if [[ $test_online == *"success.jsp"* ]]; then
         exit 0
     fi
+    query=$(fetch_params $ip)
     response=$(curl -XPOST -sL $login_url \
     --data-urlencode "userId=$userid" \
     --data-urlencode "password=$passwd" \
